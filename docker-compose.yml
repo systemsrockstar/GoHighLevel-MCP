@@ -1,0 +1,16 @@
+services:
+  ghl-mcp:
+    build:
+      context: .
+    container_name: ghl-mcp-docker
+    restart: always
+    networks:
+      - coolify
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=false
+
+networks:
+  coolify:
+    external: true
