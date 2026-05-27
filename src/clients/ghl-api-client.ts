@@ -8146,4 +8146,128 @@ export class GHLApiClient {
   getLocationId(): string {
     return this.config.locationId;
   }
+
+  // ── Brand Boards ──────────────────────────────────────────────────────────
+
+  async listBrandBoards(locationId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/brand-boards/${locationId}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getBrandBoard(locationId: string, id: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/brand-boards/${locationId}/${id}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createBrandBoard(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { name, colors, fonts, logos } = params;
+      const response = await this.axiosInstance.post('/brand-boards/', { locationId, name, colors, fonts, logos }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateBrandBoard(locationId: string, id: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { name, colors, fonts, logos } = params;
+      const response = await this.axiosInstance.patch(`/brand-boards/${locationId}/${id}`, { name, colors, fonts, logos }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteBrandBoard(locationId: string, id: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/brand-boards/${locationId}/${id}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ── SaaS API ─────────────────────────────────────────────────────────────
+
+  async getSaasLocations(companyId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/saas-api/public-api/saas-locations/${companyId}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getSaasSubscription(locationId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/saas-api/public-api/get-saas-subscription/${locationId}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateSaasSubscription(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { planId, customerId } = params;
+      const response = await this.axiosInstance.put(`/saas-api/public-api/update-saas-subscription/${locationId}`, { planId, customerId }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async enableSaas(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { stripeCustomerId, planId } = params;
+      const response = await this.axiosInstance.post(`/saas-api/public-api/enable-saas/${locationId}`, { stripeCustomerId, planId }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async bulkEnableSaas(companyId: string, locationIds: string[]): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/saas-api/public-api/bulk-enable-saas/${companyId}`, { locationIds }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async bulkDisableSaas(companyId: string, locationIds: string[]): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/saas-api/public-api/bulk-disable-saas/${companyId}`, { locationIds }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async pauseLocation(locationId: string, paused: boolean): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/saas-api/public-api/pause/${locationId}`, { paused }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateRebilling(companyId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { product, markupPercentage } = params;
+      const response = await this.axiosInstance.post(`/saas-api/public-api/update-rebilling/${companyId}`, { product, markupPercentage }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getAgencyPlans(companyId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/saas-api/public-api/agency-plans/${companyId}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getSaasPlan(planId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/saas-api/public-api/saas-plan/${planId}`, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getLocationsByStripeId(companyId: string, stripeId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/saas-api/public-api/locations', {
+        headers: this.getV2Headers(),
+        params: { companyId, stripeId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
 }

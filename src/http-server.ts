@@ -51,6 +51,8 @@ import { AffiliateManagerTools, isAffiliateManagerTool } from './tools/affiliate
 import { CustomMenusTools, isCustomMenusTool } from './tools/custom-menus-tools.js';
 import { ProposalsTools, isProposalsTool } from './tools/proposals-tools.js';
 import { MiscTools, isMiscTool } from './tools/misc-tools.js';
+import { BrandBoardsTools, isBrandBoardsTool } from './tools/brand-boards-tools.js';
+import { SaasTools, isSaasTool } from './tools/saas-tools.js';
 import { GHLConfig } from './types/ghl-types';
 
 // Load environment variables
@@ -98,6 +100,8 @@ class GHLMCPHttpServer {
   private customMenusTools: CustomMenusTools;
   private proposalsTools: ProposalsTools;
   private miscTools: MiscTools;
+  private brandBoardsTools: BrandBoardsTools;
+  private saasTools: SaasTools;
   private port: number;
 
   constructor() {
@@ -159,6 +163,8 @@ class GHLMCPHttpServer {
     this.customMenusTools = new CustomMenusTools(this.ghlClient);
     this.proposalsTools = new ProposalsTools(this.ghlClient);
     this.miscTools = new MiscTools(this.ghlClient);
+    this.brandBoardsTools = new BrandBoardsTools(this.ghlClient);
+    this.saasTools = new SaasTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupMCPHandlers();
@@ -260,6 +266,8 @@ class GHLMCPHttpServer {
         const customMenusToolDefinitions = this.customMenusTools.getTools();
         const proposalsToolDefinitions = this.proposalsTools.getTools();
         const miscToolDefinitions = this.miscTools.getTools();
+        const brandBoardsToolDefinitions = this.brandBoardsTools.getTools();
+        const saasToolDefinitions = this.saasTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -296,9 +304,11 @@ class GHLMCPHttpServer {
           ...affiliateManagerToolDefinitions,
           ...customMenusToolDefinitions,
           ...proposalsToolDefinitions,
-          ...miscToolDefinitions
+          ...miscToolDefinitions,
+          ...brandBoardsToolDefinitions,
+          ...saasToolDefinitions
         ];
-        
+
         console.log(`[GHL MCP HTTP] Registered ${allTools.length} tools total`);
         
         return {
@@ -393,6 +403,10 @@ class GHLMCPHttpServer {
           result = await this.proposalsTools.executeProposalsTool(name, args || {});
         } else if (isMiscTool(name)) {
           result = await this.miscTools.executeMiscTool(name, args || {});
+        } else if (isBrandBoardsTool(name)) {
+          result = await this.brandBoardsTools.executeBrandBoardsTool(name, args || {});
+        } else if (isSaasTool(name)) {
+          result = await this.saasTools.executeSaasTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -579,6 +593,8 @@ class GHLMCPHttpServer {
       customMenus: this.customMenusTools.getTools().length,
       proposals: this.proposalsTools.getTools().length,
       misc: this.miscTools.getTools().length,
+      brandBoards: this.brandBoardsTools.getTools().length,
+      saas: this.saasTools.getTools().length,
       total: this.contactTools.getToolDefinitions().length +
              this.conversationTools.getToolDefinitions().length +
              this.blogTools.getToolDefinitions().length +
@@ -613,7 +629,9 @@ class GHLMCPHttpServer {
              this.affiliateManagerTools.getTools().length +
              this.customMenusTools.getTools().length +
              this.proposalsTools.getTools().length +
-             this.miscTools.getTools().length
+             this.miscTools.getTools().length +
+             this.brandBoardsTools.getTools().length +
+             this.saasTools.getTools().length
     };
   }
 

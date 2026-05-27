@@ -50,6 +50,8 @@ import { AffiliateManagerTools, isAffiliateManagerTool } from './tools/affiliate
 import { CustomMenusTools, isCustomMenusTool } from './tools/custom-menus-tools.js';
 import { ProposalsTools, isProposalsTool } from './tools/proposals-tools.js';
 import { MiscTools, isMiscTool } from './tools/misc-tools.js';
+import { BrandBoardsTools, isBrandBoardsTool } from './tools/brand-boards-tools.js';
+import { SaasTools, isSaasTool } from './tools/saas-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -95,6 +97,8 @@ class GHLMCPServer {
   private customMenusTools: CustomMenusTools;
   private proposalsTools: ProposalsTools;
   private miscTools: MiscTools;
+  private brandBoardsTools: BrandBoardsTools;
+  private saasTools: SaasTools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -149,6 +153,8 @@ class GHLMCPServer {
     this.customMenusTools = new CustomMenusTools(this.ghlClient);
     this.proposalsTools = new ProposalsTools(this.ghlClient);
     this.miscTools = new MiscTools(this.ghlClient);
+    this.brandBoardsTools = new BrandBoardsTools(this.ghlClient);
+    this.saasTools = new SaasTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -227,6 +233,8 @@ class GHLMCPServer {
         const customMenusToolDefinitions = this.customMenusTools.getTools();
         const proposalsToolDefinitions = this.proposalsTools.getTools();
         const miscToolDefinitions = this.miscTools.getTools();
+        const brandBoardsToolDefinitions = this.brandBoardsTools.getTools();
+        const saasToolDefinitions = this.saasTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -263,7 +271,9 @@ class GHLMCPServer {
           ...affiliateManagerToolDefinitions,
           ...customMenusToolDefinitions,
           ...proposalsToolDefinitions,
-          ...miscToolDefinitions
+          ...miscToolDefinitions,
+          ...brandBoardsToolDefinitions,
+          ...saasToolDefinitions
         ];
 
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
@@ -302,6 +312,8 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${customMenusToolDefinitions.length} custom menus tools\n`);
         process.stderr.write(`[GHL MCP] - ${proposalsToolDefinitions.length} proposals tools\n`);
         process.stderr.write(`[GHL MCP] - ${miscToolDefinitions.length} misc tools\n`);
+        process.stderr.write(`[GHL MCP] - ${brandBoardsToolDefinitions.length} brand boards tools\n`);
+        process.stderr.write(`[GHL MCP] - ${saasToolDefinitions.length} SaaS tools\n`);
 
         return {
           tools: allTools
@@ -396,6 +408,10 @@ class GHLMCPServer {
           result = await this.proposalsTools.executeProposalsTool(name, args || {});
         } else if (isMiscTool(name)) {
           result = await this.miscTools.executeMiscTool(name, args || {});
+        } else if (isBrandBoardsTool(name)) {
+          result = await this.brandBoardsTools.executeBrandBoardsTool(name, args || {});
+        } else if (isSaasTool(name)) {
+          result = await this.saasTools.executeSaasTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
