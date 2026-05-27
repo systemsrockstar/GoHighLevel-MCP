@@ -41,6 +41,8 @@ import { ConversationAITools, isConversationAITool } from './tools/conversation-
 import { FormsTools, isFormsTool } from './tools/forms-tools.js';
 import { UsersTools, isUsersTool } from './tools/users-tools.js';
 import { BusinessesTools, isBusinessesTool } from './tools/businesses-tools.js';
+import { TriggerLinksTools, isTriggerLinksTool } from './tools/trigger-links-tools.js';
+import { FunnelsTools, isFunnelsTool } from './tools/funnels-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -77,6 +79,8 @@ class GHLMCPServer {
   private formsTools: FormsTools;
   private usersTools: UsersTools;
   private businessesTools: BusinessesTools;
+  private triggerLinksTools: TriggerLinksTools;
+  private funnelsTools: FunnelsTools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -122,6 +126,8 @@ class GHLMCPServer {
     this.formsTools = new FormsTools(this.ghlClient);
     this.usersTools = new UsersTools(this.ghlClient);
     this.businessesTools = new BusinessesTools(this.ghlClient);
+    this.triggerLinksTools = new TriggerLinksTools(this.ghlClient);
+    this.funnelsTools = new FunnelsTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -191,6 +197,8 @@ class GHLMCPServer {
         const formsToolDefinitions = this.formsTools.getTools();
         const usersToolDefinitions = this.usersTools.getTools();
         const businessesToolDefinitions = this.businessesTools.getTools();
+        const triggerLinksToolDefinitions = this.triggerLinksTools.getTools();
+        const funnelsToolDefinitions = this.funnelsTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -218,7 +226,9 @@ class GHLMCPServer {
           ...conversationAIToolDefinitions,
           ...formsToolDefinitions,
           ...usersToolDefinitions,
-          ...businessesToolDefinitions
+          ...businessesToolDefinitions,
+          ...triggerLinksToolDefinitions,
+          ...funnelsToolDefinitions
         ];
 
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
@@ -248,6 +258,8 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${formsToolDefinitions.length} forms tools\n`);
         process.stderr.write(`[GHL MCP] - ${usersToolDefinitions.length} users tools\n`);
         process.stderr.write(`[GHL MCP] - ${businessesToolDefinitions.length} businesses tools\n`);
+        process.stderr.write(`[GHL MCP] - ${triggerLinksToolDefinitions.length} trigger links tools\n`);
+        process.stderr.write(`[GHL MCP] - ${funnelsToolDefinitions.length} funnels tools\n`);
 
         return {
           tools: allTools
@@ -324,6 +336,10 @@ class GHLMCPServer {
           result = await this.usersTools.executeUsersTool(name, args || {});
         } else if (isBusinessesTool(name)) {
           result = await this.businessesTools.executeBusinessesTool(name, args || {});
+        } else if (isTriggerLinksTool(name)) {
+          result = await this.triggerLinksTools.executeTriggerLinksTool(name, args || {});
+        } else if (isFunnelsTool(name)) {
+          result = await this.funnelsTools.executeFunnelsTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -876,6 +892,12 @@ class GHLMCPServer {
       process.stderr.write('\n');
       process.stderr.write('🏢 BUSINESSES:\n');
       process.stderr.write('   list, get, create, update, delete\n');
+      process.stderr.write('\n');
+      process.stderr.write('🔗 TRIGGER LINKS:\n');
+      process.stderr.write('   list, search, get, create, update, delete\n');
+      process.stderr.write('\n');
+      process.stderr.write('🌐 FUNNELS:\n');
+      process.stderr.write('   list funnels, list/count pages (read-only), manage URL redirects (CRUD)\n');
       process.stderr.write('=====================================\n');
       
     } catch (error) {

@@ -7519,4 +7519,178 @@ export class GHLApiClient {
       return this.wrapResponse(response.data);
     } catch (error) { throw error; }
   }
+
+  // ─── Trigger Links ────────────────────────────────────────────────────────────
+
+  async listTriggerLinks(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/links/', {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async searchTriggerLinks(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/links/search', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.query && { query: params.query }),
+          ...(params.skip !== undefined && { skip: params.skip }),
+          ...(params.limit !== undefined && { limit: params.limit })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getTriggerLink(linkId: string, locationId?: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/links/id/${linkId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createTriggerLink(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const body = {
+        locationId: params.locationId || this.config.locationId,
+        name: params.name,
+        redirectTo: params.redirectTo
+      };
+      const response = await this.axiosInstance.post('/links/', body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateTriggerLink(linkId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/links/${linkId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteTriggerLink(linkId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/links/${linkId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Funnels ──────────────────────────────────────────────────────────────────
+
+  async listFunnels(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/funnels/funnel/list', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.name && { name: params.name }),
+          ...(params.type && { type: params.type }),
+          ...(params.category && { category: params.category }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset }),
+          ...(params.parentId && { parentId: params.parentId })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listFunnelPages(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/funnels/page', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.funnelId && { funnelId: params.funnelId }),
+          ...(params.name && { name: params.name }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async countFunnelPages(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/funnels/page/count', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.funnelId && { funnelId: params.funnelId }),
+          ...(params.name && { name: params.name })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listFunnelRedirects(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/funnels/lookup/redirect/list', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.search && { search: params.search }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createFunnelRedirect(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const body = {
+        locationId: params.locationId || this.config.locationId,
+        domain: params.domain,
+        path: params.path,
+        target: params.target,
+        action: params.action
+      };
+      const response = await this.axiosInstance.post('/funnels/lookup/redirect', body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateFunnelRedirect(redirectId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const payload = {
+        locationId: body.locationId || this.config.locationId,
+        target: body.target,
+        action: body.action
+      };
+      const response = await this.axiosInstance.patch(`/funnels/lookup/redirect/${redirectId}`, payload, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteFunnelRedirect(redirectId: string, locationId?: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/funnels/lookup/redirect/${redirectId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
 }
