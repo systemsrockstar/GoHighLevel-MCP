@@ -7230,4 +7230,160 @@ export class GHLApiClient {
       return this.wrapResponse(response.data);
     } catch (error) { throw error; }
   }
+
+  // ─── CONVERSATION AI API ─────────────────────────────────────────────────────
+
+  async convoAISearchAgents(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/conversation-ai/agents/search', {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.query && { query: params.query }),
+          ...(params.limit && { limit: params.limit }),
+          ...(params.startAfter && { startAfter: params.startAfter })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAICreateAgent(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { ...body } = params;
+      const response = await this.axiosInstance.post('/conversation-ai/agents', body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIGetAgent(agentId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/conversation-ai/agents/${agentId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIUpdateAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { agentId: _id, ...body } = params;
+      const response = await this.axiosInstance.put(`/conversation-ai/agents/${agentId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIDeleteAgent(agentId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/conversation-ai/agents/${agentId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIListActions(agentId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/conversation-ai/agents/${agentId}/actions/list`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAICreateAction(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { agentId: _id, ...body } = params;
+      const response = await this.axiosInstance.post(`/conversation-ai/agents/${agentId}/actions`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIGetAction(agentId: string, actionId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/conversation-ai/agents/${agentId}/actions/${actionId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIUpdateAction(agentId: string, actionId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { agentId: _aid, actionId: _acid, ...body } = params;
+      const response = await this.axiosInstance.put(`/conversation-ai/agents/${agentId}/actions/${actionId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIDeleteAction(agentId: string, actionId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/conversation-ai/agents/${agentId}/actions/${actionId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIUpdateFollowupSettings(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { agentId: _id, ...body } = params;
+      const response = await this.axiosInstance.patch(`/conversation-ai/agents/${agentId}/followup-settings`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async convoAIGetGeneration(messageId: string, source: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/conversation-ai/generations', {
+        headers: this.getV2Headers(),
+        params: { messageId, source }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── FORMS API ────────────────────────────────────────────────────────────────
+
+  async getForms(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/forms/', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.skip !== undefined && { skip: params.skip }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.type && { type: params.type })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getFormSubmissions(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/forms/submissions', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.formId && { formId: params.formId }),
+          ...(params.q && { q: params.q }),
+          ...(params.startAt && { startAt: params.startAt }),
+          ...(params.endAt && { endAt: params.endAt }),
+          ...(params.page !== undefined && { page: params.page }),
+          ...(params.limit !== undefined && { limit: params.limit })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
 }

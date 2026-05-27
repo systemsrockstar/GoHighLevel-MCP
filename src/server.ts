@@ -37,6 +37,8 @@ import { InvoicesTools } from './tools/invoices-tools.js';
 import { AdManagerTools, isAdManagerTool } from './tools/ad-manager-tools.js';
 import { AgentStudioTools, isAgentStudioTool } from './tools/agent-studio-tools.js';
 import { VoiceAITools, isVoiceAITool } from './tools/voice-ai-tools.js';
+import { ConversationAITools, isConversationAITool } from './tools/conversation-ai-tools.js';
+import { FormsTools, isFormsTool } from './tools/forms-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -69,6 +71,8 @@ class GHLMCPServer {
   private adManagerTools: AdManagerTools;
   private agentStudioTools: AgentStudioTools;
   private voiceAITools: VoiceAITools;
+  private conversationAITools: ConversationAITools;
+  private formsTools: FormsTools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -110,6 +114,8 @@ class GHLMCPServer {
     this.adManagerTools = new AdManagerTools(this.ghlClient);
     this.agentStudioTools = new AgentStudioTools(this.ghlClient);
     this.voiceAITools = new VoiceAITools(this.ghlClient);
+    this.conversationAITools = new ConversationAITools(this.ghlClient);
+    this.formsTools = new FormsTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -175,6 +181,8 @@ class GHLMCPServer {
         const adManagerToolDefinitions = this.adManagerTools.getTools();
         const agentStudioToolDefinitions = this.agentStudioTools.getTools();
         const voiceAIToolDefinitions = this.voiceAITools.getTools();
+        const conversationAIToolDefinitions = this.conversationAITools.getTools();
+        const formsToolDefinitions = this.formsTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -198,9 +206,11 @@ class GHLMCPServer {
           ...invoicesToolDefinitions,
           ...adManagerToolDefinitions,
           ...agentStudioToolDefinitions,
-          ...voiceAIToolDefinitions
+          ...voiceAIToolDefinitions,
+          ...conversationAIToolDefinitions,
+          ...formsToolDefinitions
         ];
-        
+
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
         process.stderr.write(`[GHL MCP] - ${contactToolDefinitions.length} contact tools\n`);
         process.stderr.write(`[GHL MCP] - ${conversationToolDefinitions.length} conversation tools\n`);
@@ -224,6 +234,8 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${adManagerToolDefinitions.length} ad manager tools\n`);
         process.stderr.write(`[GHL MCP] - ${agentStudioToolDefinitions.length} agent studio tools\n`);
         process.stderr.write(`[GHL MCP] - ${voiceAIToolDefinitions.length} voice AI tools\n`);
+        process.stderr.write(`[GHL MCP] - ${conversationAIToolDefinitions.length} conversation AI tools\n`);
+        process.stderr.write(`[GHL MCP] - ${formsToolDefinitions.length} forms tools\n`);
 
         return {
           tools: allTools
@@ -292,6 +304,10 @@ class GHLMCPServer {
           result = await this.agentStudioTools.executeAgentStudioTool(name, args || {});
         } else if (isVoiceAITool(name)) {
           result = await this.voiceAITools.executeVoiceAITool(name, args || {});
+        } else if (isConversationAITool(name)) {
+          result = await this.conversationAITools.executeConversationAITool(name, args || {});
+        } else if (isFormsTool(name)) {
+          result = await this.formsTools.executeFormsTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -829,6 +845,15 @@ class GHLMCPServer {
       process.stderr.write('🎙️ VOICE AI:\n');
       process.stderr.write('   AGENTS: list, create, get, update, delete\n');
       process.stderr.write('   CALL LOGS: list by location/agent/contact/date, get by ID\n');
+      process.stderr.write('\n');
+      process.stderr.write('💬 CONVERSATION AI (text bots):\n');
+      process.stderr.write('   AGENTS: search, create, get, update, delete\n');
+      process.stderr.write('   ACTIONS: list, create, get, update, delete (triggerWorkflow, updateContactField, appointmentBooking, etc.)\n');
+      process.stderr.write('   SETTINGS: update followup/re-engagement settings\n');
+      process.stderr.write('   GENERATION: inspect AI-generated responses by message\n');
+      process.stderr.write('\n');
+      process.stderr.write('📋 FORMS:\n');
+      process.stderr.write('   list forms, get submissions (filterable by form, date, search query)\n');
       process.stderr.write('=====================================\n');
       
     } catch (error) {
