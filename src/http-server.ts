@@ -40,6 +40,8 @@ import { AgentStudioTools, isAgentStudioTool } from './tools/agent-studio-tools.
 import { VoiceAITools, isVoiceAITool } from './tools/voice-ai-tools.js';
 import { ConversationAITools, isConversationAITool } from './tools/conversation-ai-tools.js';
 import { FormsTools, isFormsTool } from './tools/forms-tools.js';
+import { UsersTools, isUsersTool } from './tools/users-tools.js';
+import { BusinessesTools, isBusinessesTool } from './tools/businesses-tools.js';
 import { GHLConfig } from './types/ghl-types';
 
 // Load environment variables
@@ -76,6 +78,8 @@ class GHLMCPHttpServer {
   private voiceAITools: VoiceAITools;
   private conversationAITools: ConversationAITools;
   private formsTools: FormsTools;
+  private usersTools: UsersTools;
+  private businessesTools: BusinessesTools;
   private port: number;
 
   constructor() {
@@ -126,6 +130,8 @@ class GHLMCPHttpServer {
     this.voiceAITools = new VoiceAITools(this.ghlClient);
     this.conversationAITools = new ConversationAITools(this.ghlClient);
     this.formsTools = new FormsTools(this.ghlClient);
+    this.usersTools = new UsersTools(this.ghlClient);
+    this.businessesTools = new BusinessesTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupMCPHandlers();
@@ -216,6 +222,8 @@ class GHLMCPHttpServer {
         const voiceAIToolDefinitions = this.voiceAITools.getTools();
         const conversationAIToolDefinitions = this.conversationAITools.getTools();
         const formsToolDefinitions = this.formsTools.getTools();
+        const usersToolDefinitions = this.usersTools.getTools();
+        const businessesToolDefinitions = this.businessesTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -241,7 +249,9 @@ class GHLMCPHttpServer {
           ...agentStudioToolDefinitions,
           ...voiceAIToolDefinitions,
           ...conversationAIToolDefinitions,
-          ...formsToolDefinitions
+          ...formsToolDefinitions,
+          ...usersToolDefinitions,
+          ...businessesToolDefinitions
         ];
         
         console.log(`[GHL MCP HTTP] Registered ${allTools.length} tools total`);
@@ -316,6 +326,10 @@ class GHLMCPHttpServer {
           result = await this.conversationAITools.executeConversationAITool(name, args || {});
         } else if (isFormsTool(name)) {
           result = await this.formsTools.executeFormsTool(name, args || {});
+        } else if (isUsersTool(name)) {
+          result = await this.usersTools.executeUsersTool(name, args || {});
+        } else if (isBusinessesTool(name)) {
+          result = await this.businessesTools.executeBusinessesTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -397,7 +411,9 @@ class GHLMCPHttpServer {
         const conversationAITools = this.conversationAITools.getTools();
         const formsTools = this.formsTools.getTools();
 
-        const all = [...contactTools, ...conversationTools, ...blogTools, ...opportunityTools, ...calendarTools, ...emailTools, ...locationTools, ...emailISVTools, ...socialMediaTools, ...mediaTools, ...objectTools, ...associationTools, ...customFieldV2Tools, ...workflowTools, ...surveyTools, ...storeTools, ...productsTools, ...paymentsTools, ...invoicesTools, ...adManagerTools, ...agentStudioTools, ...voiceAITools, ...conversationAITools, ...formsTools];
+        const usersTools = this.usersTools.getTools();
+        const businessesTools = this.businessesTools.getTools();
+        const all = [...contactTools, ...conversationTools, ...blogTools, ...opportunityTools, ...calendarTools, ...emailTools, ...locationTools, ...emailISVTools, ...socialMediaTools, ...mediaTools, ...objectTools, ...associationTools, ...customFieldV2Tools, ...workflowTools, ...surveyTools, ...storeTools, ...productsTools, ...paymentsTools, ...invoicesTools, ...adManagerTools, ...agentStudioTools, ...voiceAITools, ...conversationAITools, ...formsTools, ...usersTools, ...businessesTools];
         res.json({ tools: all, count: all.length });
       } catch (error) {
         res.status(500).json({ error: 'Failed to list tools' });
@@ -487,6 +503,8 @@ class GHLMCPHttpServer {
       voiceAI: this.voiceAITools.getTools().length,
       conversationAI: this.conversationAITools.getTools().length,
       forms: this.formsTools.getTools().length,
+      users: this.usersTools.getTools().length,
+      businesses: this.businessesTools.getTools().length,
       total: this.contactTools.getToolDefinitions().length +
              this.conversationTools.getToolDefinitions().length +
              this.blogTools.getToolDefinitions().length +
@@ -510,7 +528,9 @@ class GHLMCPHttpServer {
              this.agentStudioTools.getTools().length +
              this.voiceAITools.getTools().length +
              this.conversationAITools.getTools().length +
-             this.formsTools.getTools().length
+             this.formsTools.getTools().length +
+             this.usersTools.getTools().length +
+             this.businessesTools.getTools().length
     };
   }
 

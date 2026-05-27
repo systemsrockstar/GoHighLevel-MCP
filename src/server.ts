@@ -39,6 +39,8 @@ import { AgentStudioTools, isAgentStudioTool } from './tools/agent-studio-tools.
 import { VoiceAITools, isVoiceAITool } from './tools/voice-ai-tools.js';
 import { ConversationAITools, isConversationAITool } from './tools/conversation-ai-tools.js';
 import { FormsTools, isFormsTool } from './tools/forms-tools.js';
+import { UsersTools, isUsersTool } from './tools/users-tools.js';
+import { BusinessesTools, isBusinessesTool } from './tools/businesses-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -73,6 +75,8 @@ class GHLMCPServer {
   private voiceAITools: VoiceAITools;
   private conversationAITools: ConversationAITools;
   private formsTools: FormsTools;
+  private usersTools: UsersTools;
+  private businessesTools: BusinessesTools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -116,6 +120,8 @@ class GHLMCPServer {
     this.voiceAITools = new VoiceAITools(this.ghlClient);
     this.conversationAITools = new ConversationAITools(this.ghlClient);
     this.formsTools = new FormsTools(this.ghlClient);
+    this.usersTools = new UsersTools(this.ghlClient);
+    this.businessesTools = new BusinessesTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -183,6 +189,8 @@ class GHLMCPServer {
         const voiceAIToolDefinitions = this.voiceAITools.getTools();
         const conversationAIToolDefinitions = this.conversationAITools.getTools();
         const formsToolDefinitions = this.formsTools.getTools();
+        const usersToolDefinitions = this.usersTools.getTools();
+        const businessesToolDefinitions = this.businessesTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -208,7 +216,9 @@ class GHLMCPServer {
           ...agentStudioToolDefinitions,
           ...voiceAIToolDefinitions,
           ...conversationAIToolDefinitions,
-          ...formsToolDefinitions
+          ...formsToolDefinitions,
+          ...usersToolDefinitions,
+          ...businessesToolDefinitions
         ];
 
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
@@ -236,6 +246,8 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${voiceAIToolDefinitions.length} voice AI tools\n`);
         process.stderr.write(`[GHL MCP] - ${conversationAIToolDefinitions.length} conversation AI tools\n`);
         process.stderr.write(`[GHL MCP] - ${formsToolDefinitions.length} forms tools\n`);
+        process.stderr.write(`[GHL MCP] - ${usersToolDefinitions.length} users tools\n`);
+        process.stderr.write(`[GHL MCP] - ${businessesToolDefinitions.length} businesses tools\n`);
 
         return {
           tools: allTools
@@ -308,6 +320,10 @@ class GHLMCPServer {
           result = await this.conversationAITools.executeConversationAITool(name, args || {});
         } else if (isFormsTool(name)) {
           result = await this.formsTools.executeFormsTool(name, args || {});
+        } else if (isUsersTool(name)) {
+          result = await this.usersTools.executeUsersTool(name, args || {});
+        } else if (isBusinessesTool(name)) {
+          result = await this.businessesTools.executeBusinessesTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -854,6 +870,12 @@ class GHLMCPServer {
       process.stderr.write('\n');
       process.stderr.write('📋 FORMS:\n');
       process.stderr.write('   list forms, get submissions (filterable by form, date, search query)\n');
+      process.stderr.write('\n');
+      process.stderr.write('👤 USERS:\n');
+      process.stderr.write('   get by location, search, filter by email, get, create, update, delete\n');
+      process.stderr.write('\n');
+      process.stderr.write('🏢 BUSINESSES:\n');
+      process.stderr.write('   list, get, create, update, delete\n');
       process.stderr.write('=====================================\n');
       
     } catch (error) {

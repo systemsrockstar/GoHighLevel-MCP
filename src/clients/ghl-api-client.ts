@@ -7386,4 +7386,137 @@ export class GHLApiClient {
       return this.wrapResponse(response.data);
     } catch (error) { throw error; }
   }
+
+  // ─── Users ───────────────────────────────────────────────────────────────────
+
+  async getUsersByLocation(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/users/', {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async searchUsers(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/users/search', {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.companyId && { companyId: params.companyId }),
+          ...(params.locationId && { locationId: params.locationId }),
+          ...(params.query && { query: params.query }),
+          ...(params.type && { type: params.type }),
+          ...(params.role && { role: params.role }),
+          ...(params.skip !== undefined && { skip: params.skip }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.sort && { sort: params.sort }),
+          ...(params.sortDirection && { sortDirection: params.sortDirection })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async filterUsersByEmail(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/users/search/filter-by-email', { email: params.email }, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getUser(userId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/users/${userId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createUser(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/users/', params, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateUser(userId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/users/${userId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteUser(userId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/users/${userId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Businesses ───────────────────────────────────────────────────────────────
+
+  async listBusinesses(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/businesses/', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.skip !== undefined && { skip: params.skip })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getBusiness(businessId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/businesses/${businessId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createBusiness(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const body = {
+        ...params,
+        locationId: params.locationId || this.config.locationId
+      };
+      const response = await this.axiosInstance.post('/businesses/', body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateBusiness(businessId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/businesses/${businessId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteBusiness(businessId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/businesses/${businessId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
 }
