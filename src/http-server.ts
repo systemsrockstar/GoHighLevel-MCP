@@ -44,6 +44,13 @@ import { UsersTools, isUsersTool } from './tools/users-tools.js';
 import { BusinessesTools, isBusinessesTool } from './tools/businesses-tools.js';
 import { TriggerLinksTools, isTriggerLinksTool } from './tools/trigger-links-tools.js';
 import { FunnelsTools, isFunnelsTool } from './tools/funnels-tools.js';
+import { KnowledgeBaseTools, isKnowledgeBaseTool } from './tools/knowledge-base-tools.js';
+import { PhoneSystemTools, isPhoneSystemTool } from './tools/phone-system-tools.js';
+import { SnapshotsTools, isSnapshotsTool } from './tools/snapshots-tools.js';
+import { AffiliateManagerTools, isAffiliateManagerTool } from './tools/affiliate-manager-tools.js';
+import { CustomMenusTools, isCustomMenusTool } from './tools/custom-menus-tools.js';
+import { ProposalsTools, isProposalsTool } from './tools/proposals-tools.js';
+import { MiscTools, isMiscTool } from './tools/misc-tools.js';
 import { GHLConfig } from './types/ghl-types';
 
 // Load environment variables
@@ -84,6 +91,13 @@ class GHLMCPHttpServer {
   private businessesTools: BusinessesTools;
   private triggerLinksTools: TriggerLinksTools;
   private funnelsTools: FunnelsTools;
+  private knowledgeBaseTools: KnowledgeBaseTools;
+  private phoneSystemTools: PhoneSystemTools;
+  private snapshotsTools: SnapshotsTools;
+  private affiliateManagerTools: AffiliateManagerTools;
+  private customMenusTools: CustomMenusTools;
+  private proposalsTools: ProposalsTools;
+  private miscTools: MiscTools;
   private port: number;
 
   constructor() {
@@ -138,6 +152,13 @@ class GHLMCPHttpServer {
     this.businessesTools = new BusinessesTools(this.ghlClient);
     this.triggerLinksTools = new TriggerLinksTools(this.ghlClient);
     this.funnelsTools = new FunnelsTools(this.ghlClient);
+    this.knowledgeBaseTools = new KnowledgeBaseTools(this.ghlClient);
+    this.phoneSystemTools = new PhoneSystemTools(this.ghlClient);
+    this.snapshotsTools = new SnapshotsTools(this.ghlClient);
+    this.affiliateManagerTools = new AffiliateManagerTools(this.ghlClient);
+    this.customMenusTools = new CustomMenusTools(this.ghlClient);
+    this.proposalsTools = new ProposalsTools(this.ghlClient);
+    this.miscTools = new MiscTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupMCPHandlers();
@@ -232,6 +253,13 @@ class GHLMCPHttpServer {
         const businessesToolDefinitions = this.businessesTools.getTools();
         const triggerLinksToolDefinitions = this.triggerLinksTools.getTools();
         const funnelsToolDefinitions = this.funnelsTools.getTools();
+        const knowledgeBaseToolDefinitions = this.knowledgeBaseTools.getTools();
+        const phoneSystemToolDefinitions = this.phoneSystemTools.getTools();
+        const snapshotsToolDefinitions = this.snapshotsTools.getTools();
+        const affiliateManagerToolDefinitions = this.affiliateManagerTools.getTools();
+        const customMenusToolDefinitions = this.customMenusTools.getTools();
+        const proposalsToolDefinitions = this.proposalsTools.getTools();
+        const miscToolDefinitions = this.miscTools.getTools();
 
         const allTools = [
           ...contactToolDefinitions,
@@ -261,7 +289,14 @@ class GHLMCPHttpServer {
           ...usersToolDefinitions,
           ...businessesToolDefinitions,
           ...triggerLinksToolDefinitions,
-          ...funnelsToolDefinitions
+          ...funnelsToolDefinitions,
+          ...knowledgeBaseToolDefinitions,
+          ...phoneSystemToolDefinitions,
+          ...snapshotsToolDefinitions,
+          ...affiliateManagerToolDefinitions,
+          ...customMenusToolDefinitions,
+          ...proposalsToolDefinitions,
+          ...miscToolDefinitions
         ];
         
         console.log(`[GHL MCP HTTP] Registered ${allTools.length} tools total`);
@@ -344,6 +379,20 @@ class GHLMCPHttpServer {
           result = await this.triggerLinksTools.executeTriggerLinksTool(name, args || {});
         } else if (isFunnelsTool(name)) {
           result = await this.funnelsTools.executeFunnelsTool(name, args || {});
+        } else if (isKnowledgeBaseTool(name)) {
+          result = await this.knowledgeBaseTools.executeKnowledgeBaseTool(name, args || {});
+        } else if (isPhoneSystemTool(name)) {
+          result = await this.phoneSystemTools.executePhoneSystemTool(name, args || {});
+        } else if (isSnapshotsTool(name)) {
+          result = await this.snapshotsTools.executeSnapshotsTool(name, args || {});
+        } else if (isAffiliateManagerTool(name)) {
+          result = await this.affiliateManagerTools.executeAffiliateManagerTool(name, args || {});
+        } else if (isCustomMenusTool(name)) {
+          result = await this.customMenusTools.executeCustomMenusTool(name, args || {});
+        } else if (isProposalsTool(name)) {
+          result = await this.proposalsTools.executeProposalsTool(name, args || {});
+        } else if (isMiscTool(name)) {
+          result = await this.miscTools.executeMiscTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -523,6 +572,13 @@ class GHLMCPHttpServer {
       businesses: this.businessesTools.getTools().length,
       triggerLinks: this.triggerLinksTools.getTools().length,
       funnels: this.funnelsTools.getTools().length,
+      knowledgeBase: this.knowledgeBaseTools.getTools().length,
+      phoneSystem: this.phoneSystemTools.getTools().length,
+      snapshots: this.snapshotsTools.getTools().length,
+      affiliateManager: this.affiliateManagerTools.getTools().length,
+      customMenus: this.customMenusTools.getTools().length,
+      proposals: this.proposalsTools.getTools().length,
+      misc: this.miscTools.getTools().length,
       total: this.contactTools.getToolDefinitions().length +
              this.conversationTools.getToolDefinitions().length +
              this.blogTools.getToolDefinitions().length +
@@ -550,7 +606,14 @@ class GHLMCPHttpServer {
              this.usersTools.getTools().length +
              this.businessesTools.getTools().length +
              this.triggerLinksTools.getTools().length +
-             this.funnelsTools.getTools().length
+             this.funnelsTools.getTools().length +
+             this.knowledgeBaseTools.getTools().length +
+             this.phoneSystemTools.getTools().length +
+             this.snapshotsTools.getTools().length +
+             this.affiliateManagerTools.getTools().length +
+             this.customMenusTools.getTools().length +
+             this.proposalsTools.getTools().length +
+             this.miscTools.getTools().length
     };
   }
 

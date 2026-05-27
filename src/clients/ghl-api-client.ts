@@ -7693,4 +7693,457 @@ export class GHLApiClient {
       return this.wrapResponse(response.data);
     } catch (error) { throw error; }
   }
+
+  // ─── Knowledge Base ───────────────────────────────────────────────────────────
+
+  async listKnowledgeBases(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/knowledge-bases/', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.query && { query: params.query }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.lastKnowledgeBaseId && { lastKnowledgeBaseId: params.lastKnowledgeBaseId })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getKnowledgeBase(knowledgeBaseId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/knowledge-bases/${knowledgeBaseId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createKnowledgeBase(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/knowledge-bases/', {
+        name: params.name,
+        locationId: params.locationId || this.config.locationId,
+        ...(params.description && { description: params.description })
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateKnowledgeBase(knowledgeBaseId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/knowledge-bases/${knowledgeBaseId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteKnowledgeBase(knowledgeBaseId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/knowledge-bases/${knowledgeBaseId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listFaqs(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/knowledge-bases/faqs', {
+        headers: this.getV2Headers(),
+        params: {
+          knowledgeBaseId: params.knowledgeBaseId,
+          locationId: params.locationId || this.config.locationId,
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.lastFaqId && { lastFaqId: params.lastFaqId })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createFaq(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/knowledge-bases/faqs', {
+        knowledgeBaseId: params.knowledgeBaseId,
+        locationId: params.locationId || this.config.locationId,
+        question: params.question,
+        answer: params.answer
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateFaq(faqId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/knowledge-bases/faqs/${faqId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteFaq(faqId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/knowledge-bases/faqs/${faqId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listCrawledUrls(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/knowledge-bases/crawler', {
+        headers: this.getV2Headers(),
+        params: {
+          knowledgeBaseId: params.knowledgeBaseId,
+          locationId: params.locationId || this.config.locationId,
+          ...(params.query && { query: params.query }),
+          ...(params.page !== undefined && { page: params.page }),
+          ...(params.pageLength !== undefined && { pageLength: params.pageLength })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async startWebsiteCrawl(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/knowledge-bases/crawler', {
+        locationId: params.locationId || this.config.locationId,
+        knowledgeBaseId: params.knowledgeBaseId,
+        url: params.url,
+        option: params.option
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getCrawlerStatus(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/knowledge-bases/crawler/status', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          knowledgeBaseId: params.knowledgeBaseId,
+          ...(params.operationId && { operationId: params.operationId })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async trainCrawledUrls(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/knowledge-bases/crawler/train', {
+        locationId: params.locationId || this.config.locationId,
+        knowledgeBaseId: params.knowledgeBaseId,
+        urlIds: params.urlIds,
+        operationId: params.operationId
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteCrawledUrls(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete('/knowledge-bases/crawler', {
+        headers: this.getV2Headers(),
+        data: {
+          knowledgeBaseId: params.knowledgeBaseId,
+          locationId: params.locationId || this.config.locationId,
+          urlIds: params.urlIds
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Phone System ─────────────────────────────────────────────────────────────
+
+  async listPhoneNumbers(locationId?: string): Promise<GHLApiResponse<any>> {
+    try {
+      const locId = locationId || this.config.locationId;
+      const response = await this.axiosInstance.get(`/phone-system/numbers/location/${locId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listAvailablePhoneNumbers(locationId?: string): Promise<GHLApiResponse<any>> {
+    try {
+      const locId = locationId || this.config.locationId;
+      const response = await this.axiosInstance.get(`/phone-system/numbers/location/${locId}/available`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listNumberPools(): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/phone-system/number-pools', {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async purchasePhoneNumber(locationId: string | undefined, phoneNumber: string): Promise<GHLApiResponse<any>> {
+    try {
+      const locId = locationId || this.config.locationId;
+      const response = await this.axiosInstance.post(`/phone-system/numbers/location/${locId}/purchase`, { phoneNumber }, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Snapshots ────────────────────────────────────────────────────────────────
+
+  async listSnapshots(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/snapshots/', {
+        headers: this.getV2Headers(),
+        params: { ...(params.companyId && { companyId: params.companyId }) }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createSnapshotShareLink(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/snapshots/share/link', {
+        snapshotId: params.snapshotId,
+        ...(params.companyId && { companyId: params.companyId }),
+        ...(params.shareType && { shareType: params.shareType })
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getSnapshotPushStatus(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/snapshots/snapshot-status/${params.snapshotId}`, {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.from && { from: params.from }),
+          ...(params.to && { to: params.to }),
+          ...(params.companyId && { companyId: params.companyId })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getLastSnapshotPush(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const locId = params.locationId || this.config.locationId;
+      const response = await this.axiosInstance.get(`/snapshots/snapshot-status/${params.snapshotId}/location/${locId}`, {
+        headers: this.getV2Headers(),
+        params: { ...(params.companyId && { companyId: params.companyId }) }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Affiliate Manager ────────────────────────────────────────────────────────
+
+  async listAffiliates(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/affiliate-manager/${locationId}/affiliates`, {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getAffiliate(locationId: string, affiliateId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/affiliate-manager/${locationId}/affiliates/${affiliateId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listAffiliatePayouts(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/affiliate-manager/${locationId}/payouts`, {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listAffiliateCommissions(locationId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/affiliate-manager/${locationId}/commissions`, {
+        headers: this.getV2Headers(),
+        params: {
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.offset !== undefined && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Custom Menus ─────────────────────────────────────────────────────────────
+
+  async listCustomMenus(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/custom-menus/', {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getCustomMenu(customMenuId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/custom-menus/${customMenuId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async createCustomMenu(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...rest } = params;
+      const response = await this.axiosInstance.post('/custom-menus/', {
+        locationId: locationId || this.config.locationId,
+        ...rest
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async updateCustomMenu(customMenuId: string, body: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.put(`/custom-menus/${customMenuId}`, body, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async deleteCustomMenu(customMenuId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/custom-menus/${customMenuId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Proposals ────────────────────────────────────────────────────────────────
+
+  async listProposalDocuments(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/proposals/document', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.status && { status: params.status }),
+          ...(params.paymentStatus && { paymentStatus: params.paymentStatus }),
+          ...(params.query && { query: params.query }),
+          ...(params.dateFrom && { dateFrom: params.dateFrom }),
+          ...(params.dateTo && { dateTo: params.dateTo }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.skip !== undefined && { skip: params.skip })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async sendProposalDocument(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/proposals/document/send', {
+        locationId: params.locationId || this.config.locationId,
+        documentId: params.documentId,
+        sentBy: params.sentBy,
+        ...(params.medium && { medium: params.medium }),
+        ...(params.documentName && { documentName: params.documentName })
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async listProposalTemplates(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/proposals/templates', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.name && { name: params.name }),
+          ...(params.type && { type: params.type }),
+          ...(params.dateFrom && { dateFrom: params.dateFrom }),
+          ...(params.dateTo && { dateTo: params.dateTo }),
+          ...(params.limit !== undefined && { limit: params.limit }),
+          ...(params.skip !== undefined && { skip: params.skip })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async sendProposalTemplate(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post('/proposals/templates/send', {
+        templateId: params.templateId,
+        locationId: params.locationId || this.config.locationId,
+        contactId: params.contactId,
+        userId: params.userId,
+        ...(params.opportunityId && { opportunityId: params.opportunityId }),
+        ...(params.sendDocument !== undefined && { sendDocument: params.sendDocument })
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Misc (Campaigns, Companies) ─────────────────────────────────────────────
+
+  async listCampaigns(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/campaigns/', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.status && { status: params.status })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async getCompany(companyId: string): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/companies/${companyId}`, {
+        headers: this.getV2Headers()
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── Public accessor ──────────────────────────────────────────────────────────
+
+  getLocationId(): string {
+    return this.config.locationId;
+  }
 }
