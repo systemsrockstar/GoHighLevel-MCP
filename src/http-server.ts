@@ -33,6 +33,13 @@ import { WorkflowTools } from './tools/workflow-tools';
 import { SurveyTools } from './tools/survey-tools';
 import { StoreTools } from './tools/store-tools';
 import { ProductsTools } from './tools/products-tools.js';
+import { PaymentsTools } from './tools/payments-tools.js';
+import { InvoicesTools } from './tools/invoices-tools.js';
+import { AdManagerTools, isAdManagerTool } from './tools/ad-manager-tools.js';
+import { AgentStudioTools, isAgentStudioTool } from './tools/agent-studio-tools.js';
+import { VoiceAITools, isVoiceAITool } from './tools/voice-ai-tools.js';
+import { ConversationAITools, isConversationAITool } from './tools/conversation-ai-tools.js';
+import { FormsTools, isFormsTool } from './tools/forms-tools.js';
 import { GHLConfig } from './types/ghl-types';
 
 // Load environment variables
@@ -62,6 +69,13 @@ class GHLMCPHttpServer {
   private surveyTools: SurveyTools;
   private storeTools: StoreTools;
   private productsTools: ProductsTools;
+  private paymentsTools: PaymentsTools;
+  private invoicesTools: InvoicesTools;
+  private adManagerTools: AdManagerTools;
+  private agentStudioTools: AgentStudioTools;
+  private voiceAITools: VoiceAITools;
+  private conversationAITools: ConversationAITools;
+  private formsTools: FormsTools;
   private port: number;
 
   constructor() {
@@ -105,6 +119,13 @@ class GHLMCPHttpServer {
     this.surveyTools = new SurveyTools(this.ghlClient);
     this.storeTools = new StoreTools(this.ghlClient);
     this.productsTools = new ProductsTools(this.ghlClient);
+    this.paymentsTools = new PaymentsTools(this.ghlClient);
+    this.invoicesTools = new InvoicesTools(this.ghlClient);
+    this.adManagerTools = new AdManagerTools(this.ghlClient);
+    this.agentStudioTools = new AgentStudioTools(this.ghlClient);
+    this.voiceAITools = new VoiceAITools(this.ghlClient);
+    this.conversationAITools = new ConversationAITools(this.ghlClient);
+    this.formsTools = new FormsTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupMCPHandlers();
@@ -188,7 +209,14 @@ class GHLMCPHttpServer {
         const surveyToolDefinitions = this.surveyTools.getTools();
         const storeToolDefinitions = this.storeTools.getTools();
         const productsToolDefinitions = this.productsTools.getTools();
-        
+        const paymentsToolDefinitions = this.paymentsTools.getTools();
+        const invoicesToolDefinitions = this.invoicesTools.getTools();
+        const adManagerToolDefinitions = this.adManagerTools.getTools();
+        const agentStudioToolDefinitions = this.agentStudioTools.getTools();
+        const voiceAIToolDefinitions = this.voiceAITools.getTools();
+        const conversationAIToolDefinitions = this.conversationAITools.getTools();
+        const formsToolDefinitions = this.formsTools.getTools();
+
         const allTools = [
           ...contactToolDefinitions,
           ...conversationToolDefinitions,
@@ -206,7 +234,14 @@ class GHLMCPHttpServer {
           ...workflowToolDefinitions,
           ...surveyToolDefinitions,
           ...storeToolDefinitions,
-          ...productsToolDefinitions
+          ...productsToolDefinitions,
+          ...paymentsToolDefinitions,
+          ...invoicesToolDefinitions,
+          ...adManagerToolDefinitions,
+          ...agentStudioToolDefinitions,
+          ...voiceAIToolDefinitions,
+          ...conversationAIToolDefinitions,
+          ...formsToolDefinitions
         ];
         
         console.log(`[GHL MCP HTTP] Registered ${allTools.length} tools total`);
@@ -267,6 +302,20 @@ class GHLMCPHttpServer {
           result = await this.storeTools.executeStoreTool(name, args || {});
         } else if (this.isProductsTool(name)) {
           result = await this.productsTools.executeProductsTool(name, args || {});
+        } else if (this.isPaymentsTool(name)) {
+          result = await this.paymentsTools.handleToolCall(name, args || {});
+        } else if (this.isInvoicesTool(name)) {
+          result = await this.invoicesTools.handleToolCall(name, args || {});
+        } else if (isAdManagerTool(name)) {
+          result = await this.adManagerTools.executeAdManagerTool(name, args || {});
+        } else if (isAgentStudioTool(name)) {
+          result = await this.agentStudioTools.executeAgentStudioTool(name, args || {});
+        } else if (isVoiceAITool(name)) {
+          result = await this.voiceAITools.executeVoiceAITool(name, args || {});
+        } else if (isConversationAITool(name)) {
+          result = await this.conversationAITools.executeConversationAITool(name, args || {});
+        } else if (isFormsTool(name)) {
+          result = await this.formsTools.executeFormsTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -340,11 +389,16 @@ class GHLMCPHttpServer {
         const surveyTools = this.surveyTools.getTools();
         const storeTools = this.storeTools.getTools();
         const productsTools = this.productsTools.getTools();
-        
-        res.json({
-          tools: [...contactTools, ...conversationTools, ...blogTools, ...opportunityTools, ...calendarTools, ...emailTools, ...locationTools, ...emailISVTools, ...socialMediaTools, ...mediaTools, ...objectTools, ...associationTools, ...customFieldV2Tools, ...workflowTools, ...surveyTools, ...storeTools, ...productsTools],
-          count: contactTools.length + conversationTools.length + blogTools.length + opportunityTools.length + calendarTools.length + emailTools.length + locationTools.length + emailISVTools.length + socialMediaTools.length + mediaTools.length + objectTools.length + associationTools.length + customFieldV2Tools.length + workflowTools.length + surveyTools.length + storeTools.length + productsTools.length
-        });
+        const paymentsTools = this.paymentsTools.getTools();
+        const invoicesTools = this.invoicesTools.getTools();
+        const adManagerTools = this.adManagerTools.getTools();
+        const agentStudioTools = this.agentStudioTools.getTools();
+        const voiceAITools = this.voiceAITools.getTools();
+        const conversationAITools = this.conversationAITools.getTools();
+        const formsTools = this.formsTools.getTools();
+
+        const all = [...contactTools, ...conversationTools, ...blogTools, ...opportunityTools, ...calendarTools, ...emailTools, ...locationTools, ...emailISVTools, ...socialMediaTools, ...mediaTools, ...objectTools, ...associationTools, ...customFieldV2Tools, ...workflowTools, ...surveyTools, ...storeTools, ...productsTools, ...paymentsTools, ...invoicesTools, ...adManagerTools, ...agentStudioTools, ...voiceAITools, ...conversationAITools, ...formsTools];
+        res.json({ tools: all, count: all.length });
       } catch (error) {
         res.status(500).json({ error: 'Failed to list tools' });
       }
@@ -426,8 +480,15 @@ class GHLMCPHttpServer {
       surveys: this.surveyTools.getTools().length,
       store: this.storeTools.getTools().length,
       products: this.productsTools.getTools().length,
-      total: this.contactTools.getToolDefinitions().length + 
-             this.conversationTools.getToolDefinitions().length + 
+      payments: this.paymentsTools.getTools().length,
+      invoices: this.invoicesTools.getTools().length,
+      adManager: this.adManagerTools.getTools().length,
+      agentStudio: this.agentStudioTools.getTools().length,
+      voiceAI: this.voiceAITools.getTools().length,
+      conversationAI: this.conversationAITools.getTools().length,
+      forms: this.formsTools.getTools().length,
+      total: this.contactTools.getToolDefinitions().length +
+             this.conversationTools.getToolDefinitions().length +
              this.blogTools.getToolDefinitions().length +
              this.opportunityTools.getToolDefinitions().length +
              this.calendarTools.getToolDefinitions().length +
@@ -442,7 +503,14 @@ class GHLMCPHttpServer {
              this.workflowTools.getTools().length +
              this.surveyTools.getTools().length +
              this.storeTools.getTools().length +
-             this.productsTools.getTools().length
+             this.productsTools.getTools().length +
+             this.paymentsTools.getTools().length +
+             this.invoicesTools.getTools().length +
+             this.adManagerTools.getTools().length +
+             this.agentStudioTools.getTools().length +
+             this.voiceAITools.getTools().length +
+             this.conversationAITools.getTools().length +
+             this.formsTools.getTools().length
     };
   }
 
@@ -660,6 +728,35 @@ class GHLMCPHttpServer {
       'ghl_bulk_update_product_reviews'
     ];
     return productsToolNames.includes(toolName);
+  }
+
+  private isPaymentsTool(toolName: string): boolean {
+    const paymentsToolNames = [
+      'create_whitelabel_integration_provider', 'list_whitelabel_integration_providers',
+      'list_orders', 'get_order_by_id',
+      'create_order_fulfillment', 'list_order_fulfillments',
+      'list_transactions', 'get_transaction_by_id',
+      'list_subscriptions', 'get_subscription_by_id',
+      'list_coupons', 'create_coupon', 'update_coupon', 'delete_coupon', 'get_coupon',
+      'create_custom_provider_integration', 'delete_custom_provider_integration',
+      'get_custom_provider_config', 'create_custom_provider_config', 'disconnect_custom_provider_config'
+    ];
+    return paymentsToolNames.includes(toolName);
+  }
+
+  private isInvoicesTool(toolName: string): boolean {
+    const invoicesToolNames = [
+      'create_invoice_template', 'list_invoice_templates', 'get_invoice_template', 'update_invoice_template', 'delete_invoice_template',
+      'update_invoice_template_late_fees', 'update_invoice_template_payment_methods',
+      'create_invoice_schedule', 'list_invoice_schedules', 'get_invoice_schedule', 'update_invoice_schedule', 'delete_invoice_schedule',
+      'schedule_invoice_schedule', 'auto_payment_invoice_schedule', 'cancel_invoice_schedule',
+      'create_invoice', 'list_invoices', 'get_invoice', 'update_invoice', 'delete_invoice', 'void_invoice', 'send_invoice',
+      'record_invoice_payment', 'generate_invoice_number', 'text2pay_invoice', 'update_invoice_last_visited',
+      'create_estimate', 'list_estimates', 'update_estimate', 'delete_estimate', 'send_estimate', 'create_invoice_from_estimate',
+      'generate_estimate_number', 'update_estimate_last_visited',
+      'list_estimate_templates', 'create_estimate_template', 'update_estimate_template', 'delete_estimate_template', 'preview_estimate_template'
+    ];
+    return invoicesToolNames.includes(toolName);
   }
 
   /**
