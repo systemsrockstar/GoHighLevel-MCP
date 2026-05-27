@@ -34,6 +34,9 @@ import { GHLConfig } from './types/ghl-types';
 import { ProductsTools } from './tools/products-tools.js';
 import { PaymentsTools } from './tools/payments-tools.js';
 import { InvoicesTools } from './tools/invoices-tools.js';
+import { AdManagerTools, isAdManagerTool } from './tools/ad-manager-tools.js';
+import { AgentStudioTools, isAgentStudioTool } from './tools/agent-studio-tools.js';
+import { VoiceAITools, isVoiceAITool } from './tools/voice-ai-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -63,6 +66,9 @@ class GHLMCPServer {
   private productsTools: ProductsTools;
   private paymentsTools: PaymentsTools;
   private invoicesTools: InvoicesTools;
+  private adManagerTools: AdManagerTools;
+  private agentStudioTools: AgentStudioTools;
+  private voiceAITools: VoiceAITools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -101,6 +107,9 @@ class GHLMCPServer {
     this.productsTools = new ProductsTools(this.ghlClient);
     this.paymentsTools = new PaymentsTools(this.ghlClient);
     this.invoicesTools = new InvoicesTools(this.ghlClient);
+    this.adManagerTools = new AdManagerTools(this.ghlClient);
+    this.agentStudioTools = new AgentStudioTools(this.ghlClient);
+    this.voiceAITools = new VoiceAITools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -163,7 +172,10 @@ class GHLMCPServer {
         const productsToolDefinitions = this.productsTools.getTools();
         const paymentsToolDefinitions = this.paymentsTools.getTools();
         const invoicesToolDefinitions = this.invoicesTools.getTools();
-        
+        const adManagerToolDefinitions = this.adManagerTools.getTools();
+        const agentStudioToolDefinitions = this.agentStudioTools.getTools();
+        const voiceAIToolDefinitions = this.voiceAITools.getTools();
+
         const allTools = [
           ...contactToolDefinitions,
           ...conversationToolDefinitions,
@@ -183,7 +195,10 @@ class GHLMCPServer {
           ...storeToolDefinitions,
           ...productsToolDefinitions,
           ...paymentsToolDefinitions,
-          ...invoicesToolDefinitions
+          ...invoicesToolDefinitions,
+          ...adManagerToolDefinitions,
+          ...agentStudioToolDefinitions,
+          ...voiceAIToolDefinitions
         ];
         
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
@@ -206,7 +221,10 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${productsToolDefinitions.length} products tools\n`);
         process.stderr.write(`[GHL MCP] - ${paymentsToolDefinitions.length} payments tools\n`);
         process.stderr.write(`[GHL MCP] - ${invoicesToolDefinitions.length} invoices tools\n`);
-        
+        process.stderr.write(`[GHL MCP] - ${adManagerToolDefinitions.length} ad manager tools\n`);
+        process.stderr.write(`[GHL MCP] - ${agentStudioToolDefinitions.length} agent studio tools\n`);
+        process.stderr.write(`[GHL MCP] - ${voiceAIToolDefinitions.length} voice AI tools\n`);
+
         return {
           tools: allTools
         };
@@ -268,6 +286,12 @@ class GHLMCPServer {
           result = await this.paymentsTools.handleToolCall(name, args || {});
         } else if (this.isInvoicesTool(name)) {
           result = await this.invoicesTools.handleToolCall(name, args || {});
+        } else if (isAdManagerTool(name)) {
+          result = await this.adManagerTools.executeAdManagerTool(name, args || {});
+        } else if (isAgentStudioTool(name)) {
+          result = await this.agentStudioTools.executeAgentStudioTool(name, args || {});
+        } else if (isVoiceAITool(name)) {
+          result = await this.voiceAITools.executeVoiceAITool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -658,7 +682,10 @@ class GHLMCPServer {
       const productsToolCount = this.productsTools.getTools().length;
       const paymentsToolCount = this.paymentsTools.getTools().length;
       const invoicesToolCount = this.invoicesTools.getTools().length;
-      const totalTools = contactToolCount + conversationToolCount + blogToolCount + opportunityToolCount + calendarToolCount + emailToolCount + locationToolCount + emailISVToolCount + socialMediaToolCount + mediaToolCount + objectToolCount + associationToolCount + customFieldV2ToolCount + workflowToolCount + surveyToolCount + storeToolCount + productsToolCount + paymentsToolCount + invoicesToolCount;
+      const adManagerToolCount = this.adManagerTools.getTools().length;
+      const agentStudioToolCount = this.agentStudioTools.getTools().length;
+      const voiceAIToolCount = this.voiceAITools.getTools().length;
+      const totalTools = contactToolCount + conversationToolCount + blogToolCount + opportunityToolCount + calendarToolCount + emailToolCount + locationToolCount + emailISVToolCount + socialMediaToolCount + mediaToolCount + objectToolCount + associationToolCount + customFieldV2ToolCount + workflowToolCount + surveyToolCount + storeToolCount + productsToolCount + paymentsToolCount + invoicesToolCount + adManagerToolCount + agentStudioToolCount + voiceAIToolCount;
       
       process.stderr.write(`📋 Available tools: ${totalTools}\n`);
       process.stderr.write('\n');
@@ -786,6 +813,22 @@ class GHLMCPServer {
       process.stderr.write('   ESTIMATES: create, list, send estimates, convert to invoices\n');
       process.stderr.write('   UTILITIES: generate invoice/estimate numbers automatically\n');
       process.stderr.write('   FEATURES: late fees, payment methods, multi-currency support\n');
+      process.stderr.write('\n');
+      process.stderr.write('📣 AD MANAGER (Facebook):\n');
+      process.stderr.write('   CAMPAIGNS: upsert, get, pause, resume, duplicate, delete\n');
+      process.stderr.write('   AD SETS: upsert, pause, resume, duplicate, delete\n');
+      process.stderr.write('   ADS: upsert, pause, resume, duplicate, delete\n');
+      process.stderr.write('   AUDIENCES: get custom audiences\n');
+      process.stderr.write('   PIXELS: get and upsert conversion pixels\n');
+      process.stderr.write('   TARGETING: search geo-locations and interests\n');
+      process.stderr.write('   REPORTING: aggregated, per-campaign, and list reporting\n');
+      process.stderr.write('\n');
+      process.stderr.write('🤖 AGENT STUDIO:\n');
+      process.stderr.write('   list_agents, get_agent, execute_agent (multi-turn via executionId)\n');
+      process.stderr.write('\n');
+      process.stderr.write('🎙️ VOICE AI:\n');
+      process.stderr.write('   AGENTS: list, create, get, update, delete\n');
+      process.stderr.write('   CALL LOGS: list by location/agent/contact/date, get by ID\n');
       process.stderr.write('=====================================\n');
       
     } catch (error) {

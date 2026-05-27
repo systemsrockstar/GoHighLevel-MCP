@@ -6825,4 +6825,409 @@ export class GHLApiClient {
       throw error;
     }
   }
-} 
+
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  private getV2Headers() {
+    return {
+      'Authorization': `Bearer ${this.config.accessToken}`,
+      'Version': '2023-02-21',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+  }
+
+  // ─── AD MANAGER API ─────────────────────────────────────────────────────────
+
+  async adGetEntities(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/entity', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.entityType && { entityType: params.entityType })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adUpsertCampaign(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...body } = params;
+      const response = await this.axiosInstance.put('/ad-publishing/facebook/campaigns', {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetCampaign(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/ad-publishing/facebook/campaign/${campaignId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adPauseCampaign(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/campaigns/${campaignId}/pause`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adResumeCampaign(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/campaigns/${campaignId}/resume`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDuplicateCampaign(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/campaigns/${campaignId}/duplicate`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDeleteCampaign(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/ad-publishing/facebook/campaigns/${campaignId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adUpsertAdSet(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...body } = params;
+      const response = await this.axiosInstance.put('/ad-publishing/facebook/adsets', {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adPauseAdSet(adSetId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/adsets/${adSetId}/pause`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adResumeAdSet(adSetId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/adsets/${adSetId}/resume`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDuplicateAdSet(adSetId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/adsets/${adSetId}/duplicate`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDeleteAdSet(adSetId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/ad-publishing/facebook/adsets/${adSetId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adUpsertAd(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...body } = params;
+      const response = await this.axiosInstance.put('/ad-publishing/facebook/ads', {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adPauseAd(adId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/ads/${adId}/pause`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adResumeAd(adId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/ads/${adId}/resume`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDuplicateAd(adId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.post(`/ad-publishing/facebook/ads/${adId}/duplicate`,
+        { locationId: params.locationId || this.config.locationId },
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adDeleteAd(adId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/ad-publishing/facebook/ads/${adId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetPixels(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/pixels', {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adUpsertPixel(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...body } = params;
+      const response = await this.axiosInstance.put('/ad-publishing/facebook/pixels', {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetAudiences(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/custom-audience', {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adSearchTargeting(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/targeting/search', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.query && { query: params.query }),
+          ...(params.type && { type: params.type })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetReporting(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/reporting', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.startDate && { startDate: params.startDate }),
+          ...(params.endDate && { endDate: params.endDate })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetCampaignReporting(campaignId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/ad-publishing/facebook/reporting/campaign/${campaignId}`, {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.startDate && { startDate: params.startDate }),
+          ...(params.endDate && { endDate: params.endDate })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async adGetReportingList(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/ad-publishing/facebook/reporting/list', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.entityType && { entityType: params.entityType }),
+          ...(params.startDate && { startDate: params.startDate }),
+          ...(params.endDate && { endDate: params.endDate })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── AGENT STUDIO API ────────────────────────────────────────────────────────
+
+  async agentStudioListAgents(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/agent-studio/public-api/agents', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.limit && { limit: params.limit }),
+          ...(params.offset && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async agentStudioGetAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/agent-studio/public-api/agents/${agentId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async agentStudioExecuteAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const body: any = {
+        locationId: params.locationId || this.config.locationId,
+        input: params.input
+      };
+      if (params.executionId) body.executionId = params.executionId;
+      const response = await this.axiosInstance.post(`/agent-studio/public-api/agents/${agentId}/execute`,
+        body,
+        { headers: this.getV2Headers() }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  // ─── VOICE AI API ────────────────────────────────────────────────────────────
+
+  async voiceAIListAgents(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/voice-ai/agents', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.limit && { limit: params.limit }),
+          ...(params.offset && { offset: params.offset })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAICreateAgent(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { locationId, ...body } = params;
+      const response = await this.axiosInstance.post('/voice-ai/agents', {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAIGetAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/voice-ai/agents/${agentId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAIUpdateAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const { agentId: _id, locationId, ...body } = params;
+      const response = await this.axiosInstance.patch(`/voice-ai/agents/${agentId}`, {
+        locationId: locationId || this.config.locationId,
+        ...body
+      }, { headers: this.getV2Headers() });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAIDeleteAgent(agentId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.delete(`/voice-ai/agents/${agentId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAIGetCallLogs(params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get('/voice-ai/dashboard/call-logs', {
+        headers: this.getV2Headers(),
+        params: {
+          locationId: params.locationId || this.config.locationId,
+          ...(params.agentId && { agentId: params.agentId }),
+          ...(params.contactId && { contactId: params.contactId }),
+          ...(params.callType && { callType: params.callType }),
+          ...(params.startDate && { startDate: params.startDate }),
+          ...(params.endDate && { endDate: params.endDate }),
+          ...(params.limit && { limit: params.limit }),
+          ...(params.page && { page: params.page })
+        }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+
+  async voiceAIGetCallLog(callId: string, params: any): Promise<GHLApiResponse<any>> {
+    try {
+      const response = await this.axiosInstance.get(`/voice-ai/dashboard/call-logs/${callId}`, {
+        headers: this.getV2Headers(),
+        params: { locationId: params.locationId || this.config.locationId }
+      });
+      return this.wrapResponse(response.data);
+    } catch (error) { throw error; }
+  }
+}
