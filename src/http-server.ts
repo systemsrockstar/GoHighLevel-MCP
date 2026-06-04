@@ -36,6 +36,27 @@ const LIST_ACCOUNTS_TOOL: Tool = {
   inputSchema: { type: 'object', properties: {} }
 };
 
+function withAccountParam(tools: any[]): any[] {
+  return tools.map((tool: any) => {
+    if (tool.name === 'ghl_list_accounts') return tool;
+    const schema = tool.inputSchema || { type: 'object', properties: {} };
+    return {
+      ...tool,
+      inputSchema: {
+        ...schema,
+        properties: {
+          ...(schema.properties || {}),
+          account: {
+            type: 'string',
+            description: 'Sub-account alias (e.g. "et", "duda", "fatninja"). Omit for default (Systems Ninjas).'
+          }
+        }
+      }
+    };
+  });
+}
+
+
 
 class GHLMCPHttpServer {
   private app: express.Application;
@@ -139,7 +160,7 @@ class GHLMCPHttpServer {
 
   private setupMCPHandlers(server: Server): void {
     server.setRequestHandler(ListToolsRequestSchema, async () => {
-      const tools = [...this.registry.getTools(), LIST_ACCOUNTS_TOOL];
+      const tools = withAccountParam([...this.registry.getTools(), LIST_ACCOUNTS_TOOL]);
       console.log(`[GHL MCP HTTP] Listing ${tools.length} tools`);
       return { tools };
     });
@@ -200,7 +221,7 @@ class GHLMCPHttpServer {
     // Tools listing
     this.app.get('/tools', async (req, res) => {
       try {
-        const tools = [...this.registry.getTools(), LIST_ACCOUNTS_TOOL];
+        const tools = withAccountParam([...this.registry.getTools(), LIST_ACCOUNTS_TOOL]);
         res.json({ tools, count: tools.length });
       } catch (error) {
         res.status(500).json({ error: 'Failed to list tools' });

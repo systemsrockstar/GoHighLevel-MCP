@@ -30,6 +30,27 @@ const LIST_ACCOUNTS_TOOL: Tool = {
   inputSchema: { type: 'object', properties: {} }
 };
 
+function withAccountParam(tools: any[]): any[] {
+  return tools.map((tool: any) => {
+    if (tool.name === 'ghl_list_accounts') return tool;
+    const schema = tool.inputSchema || { type: 'object', properties: {} };
+    return {
+      ...tool,
+      inputSchema: {
+        ...schema,
+        properties: {
+          ...(schema.properties || {}),
+          account: {
+            type: 'string',
+            description: 'Sub-account alias (e.g. "et", "duda", "fatninja"). Omit for default (Systems Ninjas).'
+          }
+        }
+      }
+    };
+  });
+}
+
+
 class GHLMCPServer {
   private server: Server;
   private registry: ToolRegistry;
@@ -101,7 +122,7 @@ class GHLMCPServer {
 
   private setupHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      const tools = [...this.registry.getTools(), LIST_ACCOUNTS_TOOL];
+      const tools = withAccountParam([...this.registry.getTools(), LIST_ACCOUNTS_TOOL]);
       process.stderr.write(`[GHL MCP] Listing ${tools.length} tools\n`);
       return { tools };
     });
